@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+require 'walrus'
+require 'walrus/attack_bot'
+require 'walrus/bucket_bot'
+require 'walrus/spellcheck_bot'
+require 'walrus/lyric_bot'
+require 'walrus/mood_bot'
+require 'cinch'
+
+module Walrus
+  class HelloBot
+    include Cinch::Plugin
+    @prefix = ''
+
+    listen_to :message
+
+    def listen(m)
+      if m.message.match(/\bhello\b/)
+        m.reply "Hi, #{m.user.nick}"
+        WhatWasThat.update("HelloBot", m)
+      end
+    end
+  end
+
+  Walrus.name='Walrus'
+  bot = Cinch::Bot.new do
+    configure do |c|
+      c.nick = Walrus.name
+      c.server = "localhost"
+      c.channels = ['#bottest']
+      c.plugins.plugins =
+        [HelloBot, AttackBot, BucketBot,
+         LyricBot, WhatWasThatBot, MoodBot]
+    end
+  end
+
+  bot.start
+end
